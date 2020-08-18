@@ -1,0 +1,57 @@
+#heading{
+    display: inline-block;
+    color: white;
+    background-color: #417690;
+    text-align: center;
+    width: 90vw;
+    padding-top: 4vh;
+    padding-bottom: 4vh;
+    margin-bottom: 15vh;
+}
+
+#login-form{
+    padding-top: 5vh;
+    margin-left: 5vw;
+    width: 90vw;
+}
+
+#login-form input{
+    width: 90vw;
+    height: 7vh;
+}
+
+#submit{
+    width: 90vw;
+    background-color: #417690;
+    color: white;
+    margin-top: 10vh;
+}
+
+@media only screen and (min-width: 1200px){
+    body{
+        background-color: #eeeeee;
+    }
+    #heading{
+        width: 40vw;
+        margin-bottom: 10vh;
+    }
+    #login-form{
+        padding-left: 25vw;
+    }
+    #login-form input, label{
+        width: 38vw;
+        margin-left: 1vw;
+        height: 7vh;
+    }
+    #submit{
+        width: 38vw;
+        margin-left: 1vw;
+    }
+    #login-form form{
+        background-color: #ffffff;
+        width: 40vw;
+        padding-top: 2vh;
+        padding-bottom: 15vh;
+        border: 1px ridge;
+    }
+}

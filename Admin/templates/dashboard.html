@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+          integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+          media="screen">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="jumbotron">
+    <h1 class="display-2">Hello Admin!</h1>
+    <p class="lead">You can use this portal to add students, teachers, library staff, classes to the database,
+        and update and delete those records accordingly. </p>
+    <hr class="my-4">
+
+
+
+
+
+    <div id="accordion">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
+                            aria-controls="collapseOne">
+                        Add a Student Record
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                    <form action="/add/student-details" id="add-student-form" method="post">
+                        <input type="text" placeholder="Registration Number" name="student-reg-no" class="lead" required="true">
+                        <br>
+                        <input type="text" placeholder="Student Name" name="student-name" class="lead" required="true">
+                        <br>
+                        <input type="text" placeholder="Father's Name" name="student-father-name" class="lead" required="true">
+                        <br>
+                        <input type="text" placeholder="Mother's Name" name="student-mother-name" class="lead" required="true">
+                        <br>
+                        <input pattern="[0-9]{10}" placeholder="Phone Number" name="student-phone-number" class="lead" required="true">
+                        <br>
+                        <input type="address" placeholder="Address" name="student-address" class="lead" required="true">
+                        <br>
+                        <input type="text" placeholder="Password" name="student-initial-password" class="lead" required="true">
+                        <br>
+                        <button type="submit" class="btn btn-info" id="add-student-button">Add Student Record</button>
+                    </form>
+                    {% if message.addStudentRecordFail %}
+                    <script>alert("Registration Number not Available")</script>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingTwo">
+                <h5 class="mb-0">
+                    <button class="btn" data-toggle="collapse" data-target="#collapseTwo"
+                            aria-expanded="false" aria-controls="collapseTwo">
+                        Update a Student Record
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                <div class="card-body">
+                    <form action="/update/student-details" id="update-student-form" method="post">
+                        <input type="text" placeholder="Registration Number" name="student-reg-no" class="lead" required="true">
+                        <br>
+                        <input type="text" placeholder="Student Name" name="student-name" class="lead" required="true">
+                        <br>
+                        <input type="text" placeholder="Father's Name" name="student-father-name" class="lead" required="true">
+                        <br>
+                        <input type="text" placeholder="Mother's Name" name="student-mother-name" class="lead" required="true">
+                        <br>
+                        <input pattern="[0-9]{10}" placeholder="Phone Number" name="student-phone-number" class="lead" required="true">
+                        <br>
+                        <input type="address" placeholder="Address" name="student-address" class="lead" required="true">
+                        <br>
+                        <button type="submit" class="btn btn-info" id="update-student-button">Update Student Record</button>
+                    </form>
+                    {% if message.updateStudentRecordFail %}
+                        <script>alert("No Record found with the given Registration Number")</script>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingThree">
+                <h5 class="mb-0">
+                    <button class="btn collapsed" data-toggle="collapse" data-target="#collapseThree"
+                            aria-expanded="false" aria-controls="collapseThree">
+                        Delete Student Record
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                <div class="card-body">
+                    <form action="/delete/student-details" id="delete-student-form" method="post">
+                        <input type="text" placeholder="Enter Registration Number" name="student-reg-no" class="lead">
+                        <br>
+                        <button type="submit" class="btn btn-info" id="delete-student-button">Delete Student Record</button>
+                    </form>
+                    {% if message.deleteStudentRecordFail %}
+                    <script>
+                        alert("Could not Find a Student Record with the given Registration Number")
+                    </script>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingFour">
+                <h5 class="mb-0">
+                    <button class="btn collapsed" data-toggle="collapse" data-target="#collapseFour"
+                            aria-expanded="false" aria-controls="collapseFour">
+                        Add Teacher Record
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+                <div class="card-body">
+                    <form action="/add/teacher" id="add-teacher-form">
+                        <input type="text" placeholder="Enter Teacher ID">
+                        <button type="submit" class="btn btn-info" id="add-teacher-button">Add Teacher Record</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
