@@ -2,6 +2,7 @@ import pymongo
 from flask import Flask, render_template, request, session, make_response, redirect, url_for
 from pymongo import MongoClient
 from Admin.models.student import Student
+from Admin.models.teacher import Teacher
 from Admin.models.database import Database
 from Admin.models.message import Message
 
@@ -17,8 +18,11 @@ def clear_session():
 @app.before_first_request
 def initialize_message():
     Message.add_student_record_success()
+    Message.add_teacher_record_success()
     Message.update_student_success()
+    Message.update_teacher_record_success()
     Message.delete_student_record_success()
+    Message.delete_teacher_record_success()
 
 
 @app.route('/')
@@ -106,6 +110,50 @@ def delete_student():
         Message.delete_student_record_success()
     else:
         Message.delete_student_record_fail()
+    return redirect("/")
+
+
+@app.route('/add/teacher-details', methods=['POST'])
+def add_teacher():
+    teacher = Teacher(
+        db=Database.db,
+        prof_id=request.form["prof-id"],
+        name=request.form["teacher-name"],
+        phone_no=request.form["teacher-phone-no"],
+        address=request.form["teacher-address"],
+        password=request.form["teacher-password"],
+        courses=request.form["teacher-courses"]
+    )
+    if teacher.is_success:
+        Message.add_teacher_record_success()
+        teacher.save_to_mongo(database=Database.db)
+    else:
+        Message.add_teacher_record_fail()
+    return redirect("/")
+
+
+@app.route('/update/teacher-details', methods=['POST'])
+def update_teacher():
+    if Teacher.update_teacher(
+        database=Database.db,
+        prof_id=request.form["prof-id"],
+        name=request.form["teacher-name"],
+        phone_no=request.form["teacher-phone-no"],
+        address=request.form["teacher-address"],
+        courses=request.form["teacher-courses"]
+    ).matched_count == 1:
+        Message.update_teacher_record_success()
+    else:
+        Message.update_teacher_record_fail()
+    return redirect("/")
+
+
+@app.route('/delete/teacher-details', methods=['POST'])
+def delete_teacher():
+    if Teacher.delete_teacher(database=Database.db, prof_id=request.form["prof-id"]).deleted_count == 1:
+        Message.delete_teacher_record_success()
+    else:
+        Message.delete_teacher_record_fail()
     return redirect("/")
 
 

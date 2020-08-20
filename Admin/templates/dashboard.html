@@ -41,19 +41,19 @@
             <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                 <div class="card-body">
                     <form action="/add/student-details" id="add-student-form" method="post">
-                        <input type="text" placeholder="Registration Number" name="student-reg-no" class="lead" required="true">
+                        <input type="text" placeholder="Registration Number" name="student-reg-no" class="lead" required>
                         <br>
-                        <input type="text" placeholder="Student Name" name="student-name" class="lead" required="true">
+                        <input type="text" placeholder="Student Name" name="student-name" class="lead" required>
                         <br>
-                        <input type="text" placeholder="Father's Name" name="student-father-name" class="lead" required="true">
+                        <input type="text" placeholder="Father's Name" name="student-father-name" class="lead" required>
                         <br>
-                        <input type="text" placeholder="Mother's Name" name="student-mother-name" class="lead" required="true">
+                        <input type="text" placeholder="Mother's Name" name="student-mother-name" class="lead" required>
                         <br>
-                        <input pattern="[0-9]{10}" placeholder="Phone Number" name="student-phone-number" class="lead" required="true">
+                        <input pattern="[0-9]{10}" placeholder="Phone Number" name="student-phone-number" class="lead" required>
                         <br>
-                        <input type="address" placeholder="Address" name="student-address" class="lead" required="true">
+                        <input type="text" placeholder="Address" name="student-address" class="lead" required>
                         <br>
-                        <input type="text" placeholder="Password" name="student-initial-password" class="lead" required="true">
+                        <input type="text" placeholder="Password" name="student-initial-password" class="lead" required>
                         <br>
                         <button type="submit" class="btn btn-info" id="add-student-button">Add Student Record</button>
                     </form>
@@ -75,17 +75,17 @@
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                 <div class="card-body">
                     <form action="/update/student-details" id="update-student-form" method="post">
-                        <input type="text" placeholder="Registration Number" name="student-reg-no" class="lead" required="true">
+                        <input type="text" placeholder="Registration Number" name="student-reg-no" class="lead" required>
                         <br>
-                        <input type="text" placeholder="Student Name" name="student-name" class="lead" required="true">
+                        <input type="text" placeholder="Student Name" name="student-name" class="lead" required>
                         <br>
-                        <input type="text" placeholder="Father's Name" name="student-father-name" class="lead" required="true">
+                        <input type="text" placeholder="Father's Name" name="student-father-name" class="lead" required>
                         <br>
-                        <input type="text" placeholder="Mother's Name" name="student-mother-name" class="lead" required="true">
+                        <input type="text" placeholder="Mother's Name" name="student-mother-name" class="lead" required>
                         <br>
-                        <input pattern="[0-9]{10}" placeholder="Phone Number" name="student-phone-number" class="lead" required="true">
+                        <input pattern="[0-9]{10}" placeholder="Phone Number" name="student-phone-number" class="lead" required>
                         <br>
-                        <input type="address" placeholder="Address" name="student-address" class="lead" required="true">
+                        <input type="text" placeholder="Address" name="student-address" class="lead" required>
                         <br>
                         <button type="submit" class="btn btn-info" id="update-student-button">Update Student Record</button>
                     </form>
@@ -107,7 +107,7 @@
             <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
                 <div class="card-body">
                     <form action="/delete/student-details" id="delete-student-form" method="post">
-                        <input type="text" placeholder="Enter Registration Number" name="student-reg-no" class="lead">
+                        <input type="text" placeholder="Enter Registration Number" name="student-reg-no" class="lead" required>
                         <br>
                         <button type="submit" class="btn btn-info" id="delete-student-button">Delete Student Record</button>
                     </form>
@@ -130,10 +130,76 @@
             </div>
             <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
                 <div class="card-body">
-                    <form action="/add/teacher" id="add-teacher-form">
-                        <input type="text" placeholder="Enter Teacher ID">
+                    <form action="/add/teacher-details" id="add-teacher-form" method="post">
+                        <input type="text" placeholder="Enter Teacher ID" class="lead" required name="prof-id">
+                        <br>
+                        <input type="text" placeholder="Name" class="lead" required name="teacher-name">
+                        <br>
+                        <input pattern="[0-9]{10}" placeholder="Phone Number" class="lead" required name="teacher-phone-no">
+                        <br>
+                        <input type="text" placeholder="Address" class="lead" required name="teacher-address">
+                        <br>
+                        <input type="password" placeholder="Password" class="lead" required name="teacher-password">
+                        <br>
+                        <input pattern="([A-Z]{3}[0-9]{4},)*([A-Z]{3}[0-9]{4})" placeholder="Course IDs" class="lead" required name="teacher-courses">
+                        <br>
                         <button type="submit" class="btn btn-info" id="add-teacher-button">Add Teacher Record</button>
                     </form>
+                    {% if message.addTeacherRecordFail %}
+                        <script>alert("This id has already been assigned to a teacher, try a different one.")</script>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingFive">
+                <h5 class="mb-0">
+                    <button class="btn collapsed" data-toggle="collapse" data-target="#collapseFive"
+                            aria-expanded="false" aria-controls="collapseFive">
+                        Update a Teacher Record
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
+                <div class="card-body">
+                    <form action="/update/teacher-details" id="update-teacher-form" method="post">
+                        <input type="text" placeholder="Enter Teacher ID" class="lead" required name="prof-id">
+                        <br>
+                        <input type="text" placeholder="Name" class="lead" required name="teacher-name">
+                        <br>
+                        <input pattern="[0-9]{10}" placeholder="Phone Number" class="lead" required name="teacher-phone-no">
+                        <br>
+                        <input type="text" placeholder="Address" class="lead" required name="teacher-address">
+                        <br>
+                        <input pattern="([A-Z]{3}[0-9]{4},)*([A-Z]{3}[0-9]{4})" placeholder="Course IDs" class="lead" required name="teacher-courses">
+                        <br>
+                        <button type="submit" class="btn btn-info" id="update-teacher-button">Update Teacher Record</button>
+                    </form>
+                    {% if message.updateTeacherRecordFail %}
+                        <script>alert("Could not find a record with the entered id. Please check the id and try again.")</script>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingSix">
+                <h5 class="mb-0">
+                    <button class="btn collapsed" data-toggle="collapse" data-target="#collapseSix"
+                            aria-expanded="false" aria-controls="collapseSix">
+                        Add Teacher Record
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordion">
+                <div class="card-body">
+                    <form action="/delete/teacher-details" id="delete-teacher-form" method="post">
+                        <input type="text" placeholder="Enter Teacher ID" class="lead" required name="prof-id">
+                        <br>
+                        <button type="submit" class="btn btn-info" id="delete-teacher-button">Delete Teacher Record</button>
+                    </form>
+                    {% if message.deleteTeacherRecordFail %}
+                        <script>alert("Could not find any records with the given Professor ID")</script>
+                    {% endif %}
                 </div>
             </div>
         </div>

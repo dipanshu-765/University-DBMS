@@ -2,6 +2,8 @@ import pymongo
 
 
 class Database:
+    db = pymongo.MongoClient()
+
     @staticmethod
     def initialize(uri):
         client = pymongo.MongoClient(uri)
