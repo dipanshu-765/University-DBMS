@@ -18,3 +18,4 @@ db.createUser({
 use tdu
 db.createCollection("student_details")
 db.createCollection("teacher_details")
+db.createCollection("courses")

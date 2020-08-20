@@ -186,7 +186,7 @@
                 <h5 class="mb-0">
                     <button class="btn collapsed" data-toggle="collapse" data-target="#collapseSix"
                             aria-expanded="false" aria-controls="collapseSix">
-                        Add Teacher Record
+                        Delete Teacher Record
                     </button>
                 </h5>
             </div>
@@ -196,6 +196,30 @@
                         <input type="text" placeholder="Enter Teacher ID" class="lead" required name="prof-id">
                         <br>
                         <button type="submit" class="btn btn-info" id="delete-teacher-button">Delete Teacher Record</button>
+                    </form>
+                    {% if message.deleteTeacherRecordFail %}
+                        <script>alert("Could not find any records with the given Professor ID")</script>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingSeven">
+                <h5 class="mb-0">
+                    <button class="btn collapsed" data-toggle="collapse" data-target="#collapseSeven"
+                            aria-expanded="false" aria-controls="collapseSeven">
+                        Add Course
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseSeven" class="collapse" aria-labelledby="headingSeven" data-parent="#accordion">
+                <div class="card-body">
+                    <form action="/add/course" id="add-course-form" method="post">
+                        <input pattern="[A-Z]{3}[0-9]{4}" placeholder="Enter Course ID" class="lead" required name="course-id">
+                        <br>
+                        <input type="text" placeholder="Enter Course Title" class="lead" required name="course-title">
+                        <br>
+                        <button type="submit" class="btn btn-info" id="add-course-button">Add Course</button>
                     </form>
                     {% if message.deleteTeacherRecordFail %}
                         <script>alert("Could not find any records with the given Professor ID")</script>
