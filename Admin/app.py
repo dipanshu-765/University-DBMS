@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from Admin.models.student import Student
 from Admin.models.teacher import Teacher
 from Admin.models.database import Database
+from Admin.models.courses import Courses
 from Admin.models.message import Message
 
 app = Flask(__name__)
@@ -19,10 +20,14 @@ def clear_session():
 def initialize_message():
     Message.add_student_record_success()
     Message.add_teacher_record_success()
+    Message.add_course_success()
     Message.update_student_success()
     Message.update_teacher_record_success()
+    Message.update_course_success()
     Message.delete_student_record_success()
     Message.delete_teacher_record_success()
+    Message.delete_course_success()
+    Message.course_found_success()
 
 
 @app.route('/')
@@ -124,24 +129,36 @@ def add_teacher():
         password=request.form["teacher-password"],
         courses=request.form["teacher-courses"]
     )
-    if teacher.is_success:
+    if teacher.is_success and teacher.is_course:
         Message.add_teacher_record_success()
+        Message.course_found_success()
         teacher.save_to_mongo(database=Database.db)
-    else:
+    elif not teacher.is_course and teacher.is_success:
+        Message.course_found_fail()
+    elif not teacher.is_success and teacher.is_course:
         Message.add_teacher_record_fail()
+    elif not teacher.is_success and not teacher.is_course:
+        Message.add_teacher_record_fail()
+        Message.course_found_fail()
     return redirect("/")
 
 
 @app.route('/update/teacher-details', methods=['POST'])
 def update_teacher():
-    if Teacher.update_teacher(
+    courses = request.form["teacher-courses"]
+    if Courses.check_courses(database=Database.db, courses=courses):
+        Message.course_found_success()
+    else:
+        Message.course_found_fail()
+    temp = Teacher.update_teacher(
         database=Database.db,
         prof_id=request.form["prof-id"],
         name=request.form["teacher-name"],
         phone_no=request.form["teacher-phone-no"],
         address=request.form["teacher-address"],
-        courses=request.form["teacher-courses"]
-    ).matched_count == 1:
+        courses=courses
+    )
+    if temp.matched_count == 1:
         Message.update_teacher_record_success()
     else:
         Message.update_teacher_record_fail()
@@ -154,6 +171,42 @@ def delete_teacher():
         Message.delete_teacher_record_success()
     else:
         Message.delete_teacher_record_fail()
+    return redirect("/")
+
+
+@app.route('/add/course', methods=['POST'])
+def add_course():
+    course = Courses(db=Database.db,
+                     course_id=request.form["course-id"],
+                     course_title=request.form["course-title"]
+                     )
+    if course.is_success:
+        Message.add_course_success()
+        course.save_to_mongo(database=Database.db)
+    else:
+        Message.add_course_fail()
+        print(Message.addCourseFail)
+    return redirect("/")
+
+
+@app.route('/update/course', methods=['POST'])
+def update_course():
+    if Courses.update_course(database=Database.db,
+                             course_id=request.form["course-id"],
+                             course_title=request.form["course-title"]).matched_count == 1:
+        Message.update_course_success()
+    else:
+        Message.update_course_fail()
+    return redirect("/")
+
+
+@app.route('/delete/course', methods=['POST'])
+def delete_course():
+    if Courses.delete_course(database=Database.db,
+                             course_id=request.form["course-id"]).deleted_count == 1:
+        Message.delete_course_success()
+    else:
+        Message.delete_course_fail()
     return redirect("/")
 
 

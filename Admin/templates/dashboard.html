@@ -41,7 +41,7 @@
             <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                 <div class="card-body">
                     <form action="/add/student-details" id="add-student-form" method="post">
-                        <input type="text" placeholder="Registration Number" name="student-reg-no" class="lead" required>
+                        <input pattern="[0-9]{2}[A-Z]{3}[0-9]{4}" placeholder="Registration Number" name="student-reg-no" class="lead" required>
                         <br>
                         <input type="text" placeholder="Student Name" name="student-name" class="lead" required>
                         <br>
@@ -59,6 +59,7 @@
                     </form>
                     {% if message.addStudentRecordFail %}
                     <script>alert("Registration Number not Available")</script>
+                    {{message.add_student_record_success()}}
                     {% endif %}
                 </div>
             </div>
@@ -75,7 +76,7 @@
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                 <div class="card-body">
                     <form action="/update/student-details" id="update-student-form" method="post">
-                        <input type="text" placeholder="Registration Number" name="student-reg-no" class="lead" required>
+                        <input pattern="[0-9]{2}[A-Z]{3}[0-9]{4}" placeholder="Registration Number" name="student-reg-no" class="lead" required>
                         <br>
                         <input type="text" placeholder="Student Name" name="student-name" class="lead" required>
                         <br>
@@ -91,6 +92,7 @@
                     </form>
                     {% if message.updateStudentRecordFail %}
                         <script>alert("No Record found with the given Registration Number")</script>
+                        {{message.update_student_record_success()}}
                     {% endif %}
                 </div>
             </div>
@@ -107,7 +109,7 @@
             <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
                 <div class="card-body">
                     <form action="/delete/student-details" id="delete-student-form" method="post">
-                        <input type="text" placeholder="Enter Registration Number" name="student-reg-no" class="lead" required>
+                        <input pattern="[0-9]{2}[A-Z]{3}[0-9]{4}" placeholder="Enter Registration Number" name="student-reg-no" class="lead" required>
                         <br>
                         <button type="submit" class="btn btn-info" id="delete-student-button">Delete Student Record</button>
                     </form>
@@ -115,6 +117,7 @@
                     <script>
                         alert("Could not Find a Student Record with the given Registration Number")
                     </script>
+                    {{message.delete_student_record_success()}}
                     {% endif %}
                 </div>
             </div>
@@ -131,7 +134,7 @@
             <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
                 <div class="card-body">
                     <form action="/add/teacher-details" id="add-teacher-form" method="post">
-                        <input type="text" placeholder="Enter Teacher ID" class="lead" required name="prof-id">
+                        <input pattern="(PROF)[0-9]{4}" placeholder="Enter Teacher ID" class="lead" required name="prof-id">
                         <br>
                         <input type="text" placeholder="Name" class="lead" required name="teacher-name">
                         <br>
@@ -147,6 +150,11 @@
                     </form>
                     {% if message.addTeacherRecordFail %}
                         <script>alert("This id has already been assigned to a teacher, try a different one.")</script>
+                        {{message.add_teacher_record_success()}}
+                    {% endif %}
+                    {% if message.courseFoundFail %}
+                    <script>alert("Course not found")</script>
+                    {{message.course_found_success()}}
                     {% endif %}
                 </div>
             </div>
@@ -163,7 +171,7 @@
             <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
                 <div class="card-body">
                     <form action="/update/teacher-details" id="update-teacher-form" method="post">
-                        <input type="text" placeholder="Enter Teacher ID" class="lead" required name="prof-id">
+                        <input pattern="(PROF)[0-9]{4}" placeholder="Enter Teacher ID" class="lead" required name="prof-id">
                         <br>
                         <input type="text" placeholder="Name" class="lead" required name="teacher-name">
                         <br>
@@ -177,6 +185,7 @@
                     </form>
                     {% if message.updateTeacherRecordFail %}
                         <script>alert("Could not find a record with the entered id. Please check the id and try again.")</script>
+                        {{message.update_teacher_record_success()}}
                     {% endif %}
                 </div>
             </div>
@@ -193,12 +202,13 @@
             <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordion">
                 <div class="card-body">
                     <form action="/delete/teacher-details" id="delete-teacher-form" method="post">
-                        <input type="text" placeholder="Enter Teacher ID" class="lead" required name="prof-id">
+                        <input pattern="(PROF)[0-9]{4}" placeholder="Enter Teacher ID" class="lead" required name="prof-id">
                         <br>
                         <button type="submit" class="btn btn-info" id="delete-teacher-button">Delete Teacher Record</button>
                     </form>
                     {% if message.deleteTeacherRecordFail %}
                         <script>alert("Could not find any records with the given Professor ID")</script>
+                        {{message.delete_teacher_record_success()}}
                     {% endif %}
                 </div>
             </div>
@@ -221,8 +231,63 @@
                         <br>
                         <button type="submit" class="btn btn-info" id="add-course-button">Add Course</button>
                     </form>
-                    {% if message.deleteTeacherRecordFail %}
-                        <script>alert("Could not find any records with the given Professor ID")</script>
+                    {% if message.addCourseFail %}
+                        <script>
+                        alert("There already exists a course with the given course id, please choose a different course id")
+                        </script>
+                    {{message.add_course_success()}}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingEight">
+                <h5 class="mb-0">
+                    <button class="btn collapsed" data-toggle="collapse" data-target="#collapseEight"
+                            aria-expanded="false" aria-controls="collapseEight">
+                        Update Course
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseEight" class="collapse" aria-labelledby="headingEight" data-parent="#accordion">
+                <div class="card-body">
+                    <form action="/update/course" id="update-course-form" method="post">
+                        <input pattern="([A-Z]{3}[0-9]{4})" placeholder="Enter Course ID" class="lead" required name="course-id">
+                        <br>
+                        <input type="text" placeholder="Enter Course Title" class="lead" required name="course-title">
+                        <br>
+                        <button type="submit" class="btn btn-info" id="update-course-button">Update Course</button>
+                    </form>
+                    {% if message.updateCourseFail %}
+                        <script>
+                        alert("Could not find any course with the given Course ID")
+                        </script>
+                    {{message.update_course_success()}}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingNine">
+                <h5 class="mb-0">
+                    <button class="btn collapsed" data-toggle="collapse" data-target="#collapseNine"
+                            aria-expanded="false" aria-controls="collapseNine">
+                        Delete Course
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseNine" class="collapse" aria-labelledby="headingNine" data-parent="#accordion">
+                <div class="card-body">
+                    <form action="/delete/course" id="delete-course-form" method="post">
+                        <input pattern="[A-Z]{3}[0-9]{4}" placeholder="Enter Course ID" class="lead" required name="course-id">
+                        <br>
+                        <button type="submit" class="btn btn-info" id="delete-course-button">Delete Course</button>
+                    </form>
+                    {% if message.deleteCourseFail %}
+                        <script>
+                        alert("Could not find any course with the given Course ID")
+                        </script>
+                    {{message.delete_course_success()}}
                     {% endif %}
                 </div>
             </div>

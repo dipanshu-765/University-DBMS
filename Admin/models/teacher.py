@@ -1,4 +1,5 @@
 import hashlib
+from Admin.models.courses import Courses
 
 
 class Teacher(object):
@@ -10,7 +11,7 @@ class Teacher(object):
         self.initial_password = password
         self.courses = courses.split(',')
         self.is_success = Teacher.check_profid(prof_id=prof_id, database=db)
-# Check if the courses entered are in the list of courses
+        self.is_course = Courses.check_courses(database=db, courses=self.courses)
 
     @staticmethod
     def check_profid(database, prof_id):
