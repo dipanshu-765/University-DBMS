@@ -1,14 +1,28 @@
 import pymongo
-from flask import Flask, render_template, request, session, make_response, redirect, url_for
+from flask import Flask, render_template, request, session, make_response, redirect, url_for, jsonify
 from pymongo import MongoClient
 from Admin.models.student import Student
 from Admin.models.teacher import Teacher
 from Admin.models.database import Database
 from Admin.models.courses import Courses
 from Admin.models.message import Message
+from Admin.models.batch import Batch
+from Admin.models.form import AddBatchForm
 
 app = Flask(__name__)
 app.secret_key = "tdu"
+
+
+def get_prof(course_id):
+    return [teacher for teacher in Database.db["teacher_details"].find({'courses': course_id})]
+
+
+clashing_slots = {
+    'A1': 'L1',
+    'A2': 'L2',
+    'B1': 'L3',
+    'B2': 'L4'
+}
 
 
 @app.before_first_request
@@ -33,7 +47,7 @@ def initialize_message():
 @app.route('/')
 def home_template():
     if session['username'] is None:
-        return render_template("home.html")
+        return render_template("home.html", logout=logout)
     else:
         return redirect("/home")
 
@@ -69,8 +83,13 @@ def admin_dashboard():
         print(session)
         return redirect("/")
     else:
-        print(session)
-        return render_template("dashboard.html", message=Message)
+        courses = Database.db["courses"].find({})
+        return render_template("dashboard.html", message=Message, find_prof=find_prof, courses=courses, logout=logout)
+
+
+def find_prof(value):
+    print("onchange called")
+    Batch.find_prof(database=Database.db, course=value)
 
 
 @app.route('/add/student-details', methods=['POST'])
@@ -207,6 +226,70 @@ def delete_course():
         Message.delete_course_success()
     else:
         Message.delete_course_fail()
+    return redirect("/")
+
+
+@app.route('/add/batch', methods=['POST', 'GET'])
+def add_batch():
+    courses = [course for course in Database.db["courses"].find({})]
+    teachers = get_prof(course_id=courses[0]['course_id'])
+    form = AddBatchForm(courses=courses)
+    form.course.choices = [(course['course_id'], course['course_title']) for course in courses]
+    form.teacher.choices = [(teacher['prof_id'], teacher['name']) for teacher in teachers]
+    if request.method == 'GET':
+        return render_template("add_batch.html", form=form)
+    else:
+        is_slot_available = True
+
+        prof_id = request.form['teacher']
+        prof_name = Database.db['teacher_details'].find_one({'prof_id': prof_id})['name']
+        course_id = request.form['course']
+        course_title = Database.db['courses'].find_one({'course_id': course_id})['course_title']
+        available_seats = request.form['seats']
+        semester = request.form['semester']
+        slot = request.form['slot']
+
+        temp = Database.db["teacher_slots"].find({'semester': semester})
+        for t in temp:
+            temp_slot = t['slot']
+            if clashing_slots.get(temp_slot, 0) == slot:
+                is_slot_available = False
+
+        if is_slot_available:
+            Batch(prof_id=prof_id, prof_name=prof_name, course_id=course_id, course_title=course_title,
+                  available_seats=available_seats, slot=slot, semester=semester).save_to_mongo(database=Database.db)
+            Database.db["teacher_slots"].insert_one({
+                'semester': request.form['semester'],
+                'teacher': request.form['teacher'],
+                'slot': request.form['slot']
+            })
+
+        return redirect("/")
+
+
+@app.route('/teacher/<course_id>')
+def teacher_state(course_id):
+    if session['username'] is None:
+        return redirect('/')
+    teacher_array = []
+    teachers = get_prof(course_id=course_id)
+    for teacher in teachers:
+        temp_teacher = dict()
+        temp_teacher['prof_id'] = teacher['prof_id']
+        temp_teacher['name'] = teacher['name']
+        teacher_array.append(temp_teacher)
+
+    return jsonify({'teachers': teacher_array})
+
+
+@app.route("/reg-portal")
+def config_reg():
+    return render_template("reg_portal.html")
+
+
+@app.route("/logout")
+def logout():
+    clear_session()
     return redirect("/")
 
 
