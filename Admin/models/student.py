@@ -4,7 +4,7 @@ import pymongo
 
 class Student(object):
     def __init__(self, reg_no, name, password, phone_no, address, father_name, mother_name, db):
-        self.reg_no = reg_no
+        self._id = reg_no
         self.name = name
         self.password = password
         self.phone_no = phone_no
@@ -15,7 +15,7 @@ class Student(object):
 
     @staticmethod
     def check_regno(database, reg_no):
-        temp = database["student_details"].find_one({"registration_number": reg_no})
+        temp = database["student_details"].find_one({"_id": reg_no})
         if temp is None:
             return True
         else:
@@ -25,7 +25,7 @@ class Student(object):
         print(f"Added Record to {database}")
         database["student_details"].insert_one({
             "name": self.name,
-            "registration_number": self.reg_no,
+            "_id": self._id,
             "initial_password": self.password,
             "phone_number": self.phone_no,
             "address": self.address,
@@ -37,7 +37,7 @@ class Student(object):
     @staticmethod
     def update_details(database, reg_no, name, phone_no, address, father_name, mother_name):
         return database["student_details"].update_one({
-            "registration_number": reg_no
+            "_id": reg_no
         },
             {
                 "$set": {
@@ -51,4 +51,4 @@ class Student(object):
 
     @staticmethod
     def delete_student(database, reg_no):
-        return database["student_details"].delete_one({"registration_number": reg_no})
+        return database["student_details"].delete_one({"_id": reg_no})

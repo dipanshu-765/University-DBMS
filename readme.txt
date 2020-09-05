@@ -19,3 +19,6 @@ use tdu
 db.createCollection("student_details")
 db.createCollection("teacher_details")
 db.createCollection("courses")
+db.createCollection("course_registration_access")
+db.createCollection("batches")
+db.createCollection("teacher_slots")

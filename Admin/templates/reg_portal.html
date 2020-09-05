@@ -3,17 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>Configure Registration Portal</title>
+    <link rel="stylesheet" href={{url_for('static', filename='css/reg_portal2.css')}}>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+          media="screen">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
 </head>
 <body>
-    <form>
-        <label forName="students">
+    <form action="/reg-portal" method="post" id="config-reg-portal-form" enctype="multipart/form-data">
+        <label for="students" class="lead">
             Upload List of Students
         </label>
-        <input name="students">
-        <label forName="">
+        <br>
+        <input name="students" type="file" accept=".txt" required>
+        <br>
+        <label for="semester" class="lead">
             Choose Semester
         </label>
-        <input name="semester">
+        <br>
+        {{ form.semester }}
+        <br>
+        <script>
+            document.getElementById("semester").className = "lead"
+        </script>
+        <button type="submit" class="btn" id="upload-students-list-button">Upload List</button>
+        <button class="btn" id="go-back-button" style="float: left">
+            <a href="../" style="text-decoration: none">
+                Go Back
+            </a>
+        </button>
     </form>
 </body>
 </html>

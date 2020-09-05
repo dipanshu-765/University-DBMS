@@ -1,0 +1,39 @@
+#add-batch-form{
+    padding-top: 5vh;
+    margin-left: 5vw;
+    width: 90vw;
+    box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.1) ;
+    height: 120vh;
+}
+
+#add-batch-form input, #add-batch-form select{
+    width: 90vw;
+    height: 7vh;
+}
+
+#add-batch-button{
+    width: 90vw;
+    background-color: #417690;
+    color: white;
+    margin-top: 10vh;
+}
+
+@media only screen and (min-width: 1200px){
+    body{
+        background-color: #eeeeee;
+    }
+    #add-batch-form{
+        width: 40vw;
+        margin-left: 30vw;
+    }
+    #add-batch-form input, label, #add-batch-form select{
+        width: 38vw;
+        margin-left: 1vw;
+        height: 7vh;
+    }
+    #add-batch-button{
+        width: 38vw;
+        margin-left: 1vw;
+    }
+
+}

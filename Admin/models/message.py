@@ -9,6 +9,11 @@ class Message(object):
     deleteStudentRecordFail = False
     deleteTeacherRecordFail = False
     deleteCourseFail = False
+    addSemesterFail = False
+    updateSemesterFail = False
+    deleteSemesterFail = False
+    addBatchFail = False
+    validFileUpload = True
 
     @staticmethod
     def add_student_record_fail():
@@ -89,3 +94,43 @@ class Message(object):
     @staticmethod
     def course_found_success():
         Message.courseFoundFail = False
+
+    @staticmethod
+    def add_batch_success():
+        Message.addBatchFail = False
+
+    @staticmethod
+    def add_batch_fail():
+        Message.addBatchFail = True
+
+    @staticmethod
+    def valid_file_upload_success():
+        Message.validFileUpload = True
+
+    @staticmethod
+    def valid_file_upload_fail():
+        Message.validFileUpload = False
+
+    @staticmethod
+    def add_semester_fail():
+        Message.addSemesterFail = True
+
+    @staticmethod
+    def add_semester_success():
+        Message.addSemesterFail = False
+
+    @staticmethod
+    def update_semester_fail():
+        Message.updateSemesterFail = True
+
+    @staticmethod
+    def update_semester_success():
+        Message.updateSemesterFail = False
+
+    @staticmethod
+    def delete_semester_fail():
+        Message.deleteSemesterFail = True
+
+    @staticmethod
+    def delete_semester_success():
+        Message.deleteSemesterFail = False

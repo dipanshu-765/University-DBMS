@@ -5,6 +5,7 @@
     <title>Home</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
           integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href={{url_for('static', filename='css/add-batch-form.css')}}>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
           media="screen">
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
@@ -20,34 +21,61 @@
 <body>
 <form action="/add/batch" id="add-batch-form" method="post">
     {{ form.csrf_token }}
+    <label for="semester" class="lead">
+        Semester:
+    </label>
+    <br>
+    {{ form.semester(required='require') }}
+    <label for="course" class="lead">
+        Course:
+    </label>
+    <br>
     {{ form.course(required='required') }}
+    <br><br>
+    <label for="teacher" class="lead">
+        Teacher:
+    </label>
     <br>
     {{ form.teacher(required='required') }}
+    <br><br>
+    <label for="seats" class="lead">
+        Number of Seats:
+    </label>
     <br>
-    <input type="number" placeholder="Enter Number of Seats" className="lead" required name="seats">
+    <input type="number" placeholder="Enter Number of Seats" class="lead" required name="seats">
+    <br><br>
+    <label for="slot" class="lead">
+        Slot:
+    </label>
     <br>
     {{ form.slot }}
-    <br>
-    <input pattern="[\w \-]+" placeholder="Semester" name="semester" required>
+    <br><br>
     <script>
         let course_state = document.getElementById('course')
         let teacher_state = document.getElementById('teacher')
         course_state.className = "lead"
         teacher_state.className = "lead"
+        document.getElementById('slot').className = "lead"
         course_state.onchange = function() {
             course_id = course_state.value;
             fetch('/teacher/'+course_id).then(function(response){
                 response.json().then(function(data){
                     let optionHTML = '';
                     for(let teacher of data.teachers){
-                        optionHTML += `<option value=${teacher['prof_id']}>${teacher.name}</option>`
+                        optionHTML += `<option value=${teacher['_id']}>${teacher.name}</option>`
                     }
                     teacher_state.innerHTML = optionHTML;
                 })
             })
         }
     </script>
-    <button type="submit" class="btn btn-info" id="add-batch-button">Select Teacher</button>
+    <button type="submit" class="btn btn-info" id="add-batch-button">Add Batch</button>
+    <br>
+    <button class="btn" id="go-back-button" style="float: left">
+        <a href="../" style="text-decoration: none">
+            Go Back
+        </a>
+    </button>
 </form>
 </body>
 </html>

@@ -1,47 +1,53 @@
-import pymongo
+import pymongo, re
 from flask import Flask, render_template, request, session, make_response, redirect, url_for, jsonify
 from pymongo import MongoClient
 from Admin.models.student import Student
 from Admin.models.teacher import Teacher
 from Admin.models.database import Database
 from Admin.models.courses import Courses
+from Admin.models.semester import Semester
 from Admin.models.message import Message
 from Admin.models.batch import Batch
-from Admin.models.form import AddBatchForm
+from Admin.models.form import AddBatchForm, StudentsAccessForm
 
 app = Flask(__name__)
 app.secret_key = "tdu"
 
 
 def get_prof(course_id):
+    print(f"get_prof called with {course_id}")
     return [teacher for teacher in Database.db["teacher_details"].find({'courses': course_id})]
 
 
 clashing_slots = {
-    'A1': 'L1',
-    'A2': 'L2',
-    'B1': 'L3',
-    'B2': 'L4'
+    'A1': ['L1', 'A1'],
+    'A2': ['L2', 'A2'],
+    'B1': ['L3', 'B1'],
+    'B2': ['L4', 'B2'],
+    'C1': ['L5', 'C1'],
+    'C2': ['L6', 'C2'],
+    'D1': ['L7', 'D1'],
+    'D2': ['L8', 'D2'],
+    'E1': ['L9', 'E1'],
+    'E2': ['L10', 'E2'],
+    'F1': ['F1'],
+    'F2': ['F2'],
+    'L1': ['L1', 'A1'],
+    'L2': ['L2', 'A2'],
+    'L3': ['L3', 'B1'],
+    'L4': ['L4', 'B2'],
+    'L5': ['L5', 'C1'],
+    'L6': ['L6', 'C2'],
+    'L7': ['L7', 'D1'],
+    'L8': ['L8', 'D2'],
+    'L9': ['L9', 'E1'],
+    'L10': ['L10', 'E2']
 }
 
 
 @app.before_first_request
 def clear_session():
     session['username'] = None
-
-
-@app.before_first_request
-def initialize_message():
-    Message.add_student_record_success()
-    Message.add_teacher_record_success()
-    Message.add_course_success()
-    Message.update_student_success()
-    Message.update_teacher_record_success()
-    Message.update_course_success()
-    Message.delete_student_record_success()
-    Message.delete_teacher_record_success()
-    Message.delete_course_success()
-    Message.course_found_success()
 
 
 @app.route('/')
@@ -72,8 +78,10 @@ def login_user():
     except pymongo.errors.ConfigurationError:
         return redirect("/")
     except pymongo.errors.ServerSelectionTimeoutError:
-        return redirect("/error")
+        return render_template("servers_down.html")
     except ValueError:
+        return redirect("/")
+    except IndexError:
         return redirect("/")
 
 
@@ -84,12 +92,7 @@ def admin_dashboard():
         return redirect("/")
     else:
         courses = Database.db["courses"].find({})
-        return render_template("dashboard.html", message=Message, find_prof=find_prof, courses=courses, logout=logout)
-
-
-def find_prof(value):
-    print("onchange called")
-    Batch.find_prof(database=Database.db, course=value)
+        return render_template("dashboard.html", message=Message, courses=courses, logout=logout)
 
 
 @app.route('/add/student-details', methods=['POST'])
@@ -164,7 +167,7 @@ def add_teacher():
 
 @app.route('/update/teacher-details', methods=['POST'])
 def update_teacher():
-    courses = request.form["teacher-courses"]
+    courses = [course for course in request.form["teacher-courses"].split(',')]
     if Courses.check_courses(database=Database.db, courses=courses):
         Message.course_found_success()
     else:
@@ -204,7 +207,6 @@ def add_course():
         course.save_to_mongo(database=Database.db)
     else:
         Message.add_course_fail()
-        print(Message.addCourseFail)
     return redirect("/")
 
 
@@ -229,40 +231,68 @@ def delete_course():
     return redirect("/")
 
 
+@app.route('/add/semester', methods=['POST'])
+def add_semester():
+    semester = Semester(sem_id=request.form['sem-id'], semester=request.form['semester'], database=Database.db)
+    if semester.is_id_available:
+        semester.save_to_mongo(database=Database.db)
+    else:
+        Message.add_semester_fail()
+    return redirect("/")
+
+
+@app.route('/update/semester', methods=['POST'])
+def update_semester():
+    if Semester.update_semester(database=Database.db, id=request.form['sem-id'],
+                                semester=request.form['semester']).matched_count != 1:
+        Message.update_semester_fail()
+    return redirect("/")
+
+
+@app.route('/delete/semester', methods=['POST'])
+def delete_semester():
+    if Semester.delete_semester(database=Database.db, id=request.form['sem-id']).deleted_count != 1:
+        Message.delete_semester_fail()
+    return redirect("/")
+
+
 @app.route('/add/batch', methods=['POST', 'GET'])
 def add_batch():
     courses = [course for course in Database.db["courses"].find({})]
-    teachers = get_prof(course_id=courses[0]['course_id'])
+    teachers = get_prof(course_id=courses[0]['_id'])
+    semesters = [semester for semester in Database.db["semester"].find({})]
     form = AddBatchForm(courses=courses)
-    form.course.choices = [(course['course_id'], course['course_title']) for course in courses]
-    form.teacher.choices = [(teacher['prof_id'], teacher['name']) for teacher in teachers]
+    form.course.choices = [(course['_id'], course['course_title']) for course in courses]
+    form.teacher.choices = [(teacher['_id'], teacher['name']) for teacher in teachers]
+    form.semester.choices = [(semester['_id'], semester['semester']) for semester in semesters]
     if request.method == 'GET':
         return render_template("add_batch.html", form=form)
     else:
         is_slot_available = True
 
         prof_id = request.form['teacher']
-        prof_name = Database.db['teacher_details'].find_one({'prof_id': prof_id})['name']
+        prof_name = Database.db['teacher_details'].find_one({'_id': prof_id})['name']
         course_id = request.form['course']
-        course_title = Database.db['courses'].find_one({'course_id': course_id})['course_title']
+        course_title = Database.db['courses'].find_one({'_id': course_id})['course_title']
         available_seats = request.form['seats']
-        semester = request.form['semester']
+        semester_id = request.form['semester']
         slot = request.form['slot']
-
-        temp = Database.db["teacher_slots"].find({'semester': semester})
+        temp = Database.db["teacher_slots"].find({'semester_id': semester_id, 'teacher': prof_id})
         for t in temp:
             temp_slot = t['slot']
-            if clashing_slots.get(temp_slot, 0) == slot:
+            if slot in clashing_slots.get(temp_slot, []):
                 is_slot_available = False
 
         if is_slot_available:
             Batch(prof_id=prof_id, prof_name=prof_name, course_id=course_id, course_title=course_title,
-                  available_seats=available_seats, slot=slot, semester=semester).save_to_mongo(database=Database.db)
+                  available_seats=available_seats, slot=slot, semester=semester_id).save_to_mongo(database=Database.db)
             Database.db["teacher_slots"].insert_one({
-                'semester': request.form['semester'],
+                'semester_id': request.form['semester'],
                 'teacher': request.form['teacher'],
                 'slot': request.form['slot']
             })
+        else:
+            Message.add_batch_fail()
 
         return redirect("/")
 
@@ -272,19 +302,54 @@ def teacher_state(course_id):
     if session['username'] is None:
         return redirect('/')
     teacher_array = []
-    teachers = get_prof(course_id=course_id)
+    teachers = Database.db["teacher_details"].find({'courses': course_id})
     for teacher in teachers:
         temp_teacher = dict()
-        temp_teacher['prof_id'] = teacher['prof_id']
+        temp_teacher['_id'] = teacher['_id']
         temp_teacher['name'] = teacher['name']
         teacher_array.append(temp_teacher)
 
     return jsonify({'teachers': teacher_array})
 
 
-@app.route("/reg-portal")
+@app.route("/reg-portal", methods=['POST', 'GET'])
 def config_reg():
-    return render_template("reg_portal.html")
+    form = StudentsAccessForm()
+    form.semester.choices = [(semester['_id'], semester['semester']) for semester in Database.db["semester"].find({})]
+    if request.method == 'GET':
+        return render_template("reg_portal.html", form=form)
+    else:
+        students_list = request.files['students']
+        students = []
+        if students_list.filename.split('.')[len(students_list.filename.split('.'))-1] != "txt":
+            Message.valid_file_upload_fail()
+        else:
+            for line in students_list.readlines():
+                reg_nums = re.search(pattern="[0-9]{2}[A-Z]{3}[0-9]{4}", string=line.decode("UTF-8"))
+                if reg_nums:
+                    students.append(reg_nums.group())
+            semester = request.form['semester']
+            Database.db["course_registration_access"].update_one(
+                {
+                    'semester': semester
+                },
+                {
+                    '$set': {
+                        'students_allowed': list(set(
+                            students + Database.db["course_registration_access"].find_one(
+                                {
+                                    'semester': semester
+                                }
+                            )['students_allowed'] if Database.db["course_registration_access"].find_one(
+                                {
+                                    'semester': semester
+                                }
+                            ) is not None else students))
+                    }
+                },
+                upsert=True
+            )
+        return redirect("/")
 
 
 @app.route("/logout")
@@ -295,3 +360,4 @@ def logout():
 
 if __name__ == '__main__':
     app.run(port=4990, debug=True)
+

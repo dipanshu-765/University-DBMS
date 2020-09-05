@@ -4,7 +4,7 @@ from Admin.models.courses import Courses
 
 class Teacher(object):
     def __init__(self, prof_id, name, phone_no, address, password, courses, db):
-        self.prof_id = prof_id
+        self._id = prof_id
         self.name = name
         self.phone_no = phone_no
         self.address = address
@@ -15,7 +15,7 @@ class Teacher(object):
 
     @staticmethod
     def check_profid(database, prof_id):
-        temp = database["teacher_details"].find_one({"prof_id": prof_id})
+        temp = database["teacher_details"].find_one({"_id": prof_id})
         if temp is None:
             return True
         else:
@@ -23,7 +23,7 @@ class Teacher(object):
 
     def save_to_mongo(self, database):
         database["teacher_details"].insert_one({
-            "prof_id": self.prof_id,
+            "_id": self._id,
             "name": self.name,
             "phone_number": self.phone_no,
             "address": self.address,
@@ -34,15 +34,15 @@ class Teacher(object):
 
     @staticmethod
     def update_teacher(database, prof_id, name, phone_no, address, courses):
-        return database["teacher_details"].update_one({"prof_id": prof_id}, {
+        return database["teacher_details"].update_one({"_id": prof_id}, {
             "$set": {
                 "name": name,
                 "phone_number": phone_no,
                 "address": address,
-                "courses": courses.split(",")
+                "courses": courses
             }
         })
 
     @staticmethod
     def delete_teacher(database, prof_id):
-        return database["teacher_details"].delete_one({"prof_id": prof_id})
+        return database["teacher_details"].delete_one({"_id": prof_id})
