@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Courses</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+          media="screen">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+    <table class="table" style="width: 100vw">
+        <thead style="color: white; background-color: #00a876">
+            <tr>
+                <th class="lead">Course ID</th>
+                <th class="lead">Course Title</th>
+                <th class="lead">Professor</th>
+                <th class="lead">Slot</th>
+                <th class="lead">Seats Available</th>
+                <th></th>
+            </tr>
+        </thead>
+        {% for course in courses %}
+            <form action="/delete-course" method="post">
+                <tr>
+                    <td>{{course.course_id}}</td>
+                    <td>{{course.course_title}}</td>
+                    <td>{{course.prof_name}}</td>
+                    <td>{{course.slot}}</td>
+                    <td>{{course.available_seats}}</td>
+                    <td><button class="btn btn-success" type="submit">Delete</button></td>
+                </tr>
+                <input name="course_id" class="hidden-input" value="{{course.course_id}}">
+                <input name="slot" class="hidden-input" value="{{course.slot}}">
+                <input name="available_seats" class="hidden-input" value="{{course.available_seats}}">
+                <input name="prof_id" class="hidden-input" value="{{course.prof_id}}">
+                <input name="_id" class="hidden-input" value="{{course._id}}">
+                <input name="semester" class="hidden-input" value="{{course.semester}}">
+            </form>
+        {% endfor %}
+    </table>
+    <style>
+        .hidden-input{
+            display: none;
+        }
+        #footer a, #footer a:hover{
+            text-decoration: none;
+            color: white;
+        }
+    </style>
+</body>
+</html>

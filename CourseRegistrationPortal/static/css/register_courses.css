@@ -1,0 +1,14 @@
+.hidden-input{
+      display: none;
+}
+#footer a, #footer a:hover{
+      text-decoration: none;
+      color: white;
+}
+#go-back-button{
+      margin-right: 32vw;
+      margin-left: 5vw;
+}
+#go-back-button a, #go-back-button a:hover{
+      color: #151a22;
+}
