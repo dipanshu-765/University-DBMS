@@ -45,7 +45,7 @@ p{
         text-align: center;
     }
 
-    body{
+    .main-body{
         margin-left: 33vw;
         display: flex !important;
         align-items: center;

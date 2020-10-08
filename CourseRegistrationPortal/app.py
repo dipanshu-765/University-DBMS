@@ -1,15 +1,13 @@
 import hashlib
-
 import pymongo
 from pymongo import MongoClient
-from flask import Flask, render_template, request, session, redirect, url_for, jsonify
+from flask import Flask, render_template, request, session, redirect
 from bson.objectid import ObjectId
 from CourseRegistrationPortal.models.database import Database
 from CourseRegistrationPortal.models.message import Message
 
 app = Flask(__name__)
 app.secret_key = "tdu"
-
 
 clashing_slots = {
     'A1': ['L1', 'A1'],
@@ -35,7 +33,6 @@ clashing_slots = {
     'L9': ['L9', 'E1'],
     'L10': ['L10', 'E2']
 }
-
 
 SEMESTER_ID = "SEM000001"
 
@@ -64,7 +61,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         if Database.db["student_details"].find_one({"_id": username}) and \
-                Database.db["student_details"].find_one({"_id": username})['current_password']==\
+                Database.db["student_details"].find_one({"_id": username})['current_password'] == \
                 str(hashlib.sha256(password.encode()).hexdigest()):
             session['username'] = username
         return redirect("/")
@@ -79,12 +76,13 @@ def register(page):
     else:
         limit = 10
 
-        last_page = int(Database.db["batches"].find({"semester": SEMESTER_ID}).count()/10)
+        last_page = int(Database.db["batches"].find({"semester": SEMESTER_ID}).count() / 10)
         courses = []
-        for course in Database.db["batches"].find({"semester": SEMESTER_ID}).sort('_id', pymongo.ASCENDING).skip(page*10).limit(limit):
+        for course in Database.db["batches"].find({"semester": SEMESTER_ID}).sort('_id', pymongo.ASCENDING).skip(
+                page * 10).limit(limit):
             courses.append(course)
-        return render_template("register_courses.html", courses=courses, next_page=page+1,
-                               last_page=last_page, prev_page=page-1, message=Message)
+        return render_template("register_courses.html", courses=courses, next_page=page + 1,
+                               last_page=last_page, prev_page=page - 1, message=Message)
 
 
 def is_seat_available(batch_id):
@@ -95,8 +93,19 @@ def get_available_seats(batch_id):
     return int(Database.db["batches"].find_one({"_id": ObjectId(batch_id)})["available_seats"])
 
 
-def is_class_registered(batch_id):
+def is_class_available(batch_id):
     temp = [t for t in Database.db["student_sem_classes"].find({"reg_no": session["username"], "batch_id": batch_id})]
+    return True if not temp else False
+
+
+def is_course_available(course_id):
+    temp = [
+        t for t in Database.db["student_sem_classes"].find({
+            "reg_no": session["username"],
+            "semester": SEMESTER_ID,
+            "course_id": course_id
+        })
+    ]
     return True if not temp else False
 
 
@@ -117,20 +126,23 @@ def register_course():
     slot = request.form["slot"]
     available_seats = get_available_seats(batch_id=_id)
     if is_seat_available(_id):
-        if is_class_registered(batch_id=_id):
-            if is_slot_available(slot):
-                Database.db["batches"].update_one({"_id": ObjectId(_id)},
-                                                  {"$set": {"available_seats": str(available_seats - 1)}})
-                Database.db["student_sem_classes"].insert_one({
-                    "reg_no": session["username"],
-                    "semester": semester,
-                    "batch_id": _id,
-                    "course_id": course_id,
-                    "prof_id": prof_id,
-                    "slot": slot
-                })
+        if is_class_available(batch_id=_id):
+            if is_course_available(course_id=course_id):
+                if is_slot_available(slot):
+                    Database.db["batches"].update_one({"_id": ObjectId(_id)},
+                                                      {"$set": {"available_seats": str(available_seats - 1)}})
+                    Database.db["student_sem_classes"].insert_one({
+                        "reg_no": session["username"],
+                        "semester": semester,
+                        "batch_id": _id,
+                        "course_id": course_id,
+                        "prof_id": prof_id,
+                        "slot": slot
+                    })
+                else:
+                    Message.slot_fail()
             else:
-                Message.slot_fail()
+                Message.course_fail()
         else:
             Message.batch_fail()
     else:
@@ -138,14 +150,105 @@ def register_course():
     return redirect("/register/0")
 
 
+@app.route("/view")
+def view_courses():
+    pipeline = [
+        {
+            '$match': {
+                "reg_no": session['username']
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'courses',
+                'let': {'course_id': '$course_id'},
+                'pipeline': [
+                    {
+                        '$match': {
+                            '$expr': {
+                                '$eq': ['$_id', '$$course_id']}
+                        }
+                    }
+                ],
+                'as': 'course'
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'teacher_details',
+                'let': {'prof_id': '$prof_id'},
+                'pipeline': [
+                    {
+                        '$match': {
+                            '$expr': {
+                                '$eq': ['$_id', '$$prof_id']}
+                        }
+                    }
+                ],
+                'as': 'professor'
+            }
+        }
+    ]
+    courses = [course for course in Database.db["student_sem_classes"].aggregate(pipeline)]
+    return render_template("view_courses.html", courses=courses)
+
+
 @app.route("/delete")
 def delete():
-    courses = [course for course in Database.db["student_sem_classes"].find({"reg_no": session['username'], "semester": SEMESTER_ID})]
+    pipeline = [
+        {
+            '$match': {
+                "reg_no": session['username']
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'courses',
+                'let': {'course_id': '$course_id'},
+                'pipeline': [
+                    {
+                        '$match': {
+                            '$expr': {
+                                '$eq': ['$_id', '$$course_id']}
+                        }
+                    }
+                ],
+                'as': 'course'
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'teacher_details',
+                'let': {'prof_id': '$prof_id'},
+                'pipeline': [
+                    {
+                        '$match': {
+                            '$expr': {
+                                '$eq': ['$_id', '$$prof_id']}
+                        }
+                    }
+                ],
+                'as': 'professor'
+            }
+        }
+    ]
+    courses = [course for course in Database.db["student_sem_classes"].aggregate(pipeline)]
     return render_template("delete_courses.html", courses=courses)
+
+
+@app.route('/delete-course', methods=['POST'])
+def delete_course():
+    Database.db["student_sem_classes"].delete_one({'batch_id': request.form["batch_id"]})
+    return redirect("/")
+
+
+@app.route('/logout')
+def logout():
+    session["username"] = None
+    return redirect("/")
 
 
 if __name__ == "__main__":
     app.run(port=4992, debug=True)
 
-
-#TODO: Add Logout Button
+# TODO: Add Logout Button

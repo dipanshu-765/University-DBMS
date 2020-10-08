@@ -2,6 +2,7 @@ class Message(object):
     seats_available = True
     batch_available = True
     slot_available = True
+    course_available = True
 
     @staticmethod
     def seats_fail():
@@ -26,3 +27,11 @@ class Message(object):
     @staticmethod
     def slot_success():
         Message.slot_available = True
+
+    @staticmethod
+    def course_fail():
+        Message.course_available = False
+
+    @staticmethod
+    def course_success():
+        Message.course_available = True

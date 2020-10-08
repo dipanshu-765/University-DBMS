@@ -41,6 +41,13 @@
         {{ message.slot_success() }}
     {% endif %}
 
+    {% if not message.course_available %}
+        <script>
+            alert('Course already Registered!');
+        </script>
+        {{ message.course_success() }}
+    {% endif %}
+
     <table class="table">
         <thead style="color: white; background-color: #00a876">
             <tr>
