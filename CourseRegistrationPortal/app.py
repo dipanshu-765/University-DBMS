@@ -251,4 +251,4 @@ def logout():
 if __name__ == "__main__":
     app.run(port=4992, debug=True)
 
-# TODO: Add Logout Button
+# TODO: Restrict access to Registration Portal

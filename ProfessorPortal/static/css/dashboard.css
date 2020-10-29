@@ -1,0 +1,73 @@
+body {
+    background-color: #33333d;
+    padding-left: 10vw;
+    padding-top: 5vw;
+}
+
+h1 {
+    color: white;
+}
+
+h6 {
+    margin-left: 2vw;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #e23e75;
+}
+
+.left-side {
+    margin-bottom: 5vh;
+}
+
+.classes {
+    background-color: #373740;
+    color: white;
+    padding-top: 2vh;
+    padding-left: 2vw;
+    padding-bottom: 2vh;
+    width: 80vw;
+    border-left: 3px solid #e23e75;
+}
+
+.my-classes {
+    color: white;
+    width: 80vw;
+    padding-top: 2vh;
+    background-color: #373740;
+}
+
+.my-classes p {
+    display: inline-block;
+    margin-right: 10vw;
+    margin-left: 2vw;
+}
+
+.my-classes div {
+    border: 1px solid #33333d;
+    padding-top: 2vh;
+}
+
+@media only screen and (min-width: 1100px) {
+    .left-side {
+        width: 50vw;
+        display: inline-block;
+    }
+    .classes {
+        width: 50vw;
+        display: inline-block;
+    }
+    .my-classes {
+        border-top: 3px solid white;
+        display: inline-block;
+        width: 20vw;
+        margin-left: 15vw;
+        position: absolute;
+        margin-top: 5vh;
+    }
+}

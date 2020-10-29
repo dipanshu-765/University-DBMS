@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Class</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+          media="screen">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/classes.css')}}">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+    <br>
+    <a id="home-button" href="../">
+        <span class="material-icons">
+            home
+        </span>
+    </a>
+
+    <table>
+        <tr>
+            <td class="data-1 lead">Quiz 1</td>
+            <td class="data-2"><a href="/my-classes/{{id}}/update/quiz1">Update Marks</a></td>
+            <td class="data-2"><a href="/my-classes/{{id}}}/view/quiz1">View Marks</a></td>
+        </tr>
+        <tr>
+            <td class="data-1 lead">Quiz 2</td>
+            <td class="data-2"><a href="/my-classes/{{id}}/update/quiz2">Update Marks</a></td>
+            <td class="data-2"><a href="/my-classes/{{id}}/view/quiz2">View Marks</a></td>
+        </tr>
+        <tr>
+            <td class="data-1 lead">Digital Assignment</td>
+            <td class="data-2"><a href="/my-classes/{{id}}/update/da">Update Marks</a></td>
+            <td class="data-2"><a href="/my-classes/{{id}}/view/da">View Marks</a></td>
+        </tr>
+        <tr>
+            <td class="data-1 lead">Assessment 1</td>
+            <td class="data-2"><a href="/my-classes/{{id}}/update/assessment1">Update Marks</a></td>
+            <td class="data-2"><a href="/my-classes/{{id}}/view/assessment1">View Marks</a></td>
+        </tr>
+        <tr>
+            <td class="data-1 lead">Assessment 2</td>
+            <td class="data-2"><a href="/my-classes/{{id}}/update/assessment2">Update Marks</a></td>
+            <td class="data-2"><a href="/my-classes/{{id}}/view/assessment2">View Marks</a></td>
+        </tr>
+        <tr>
+            <td class="data-1 lead">Final Assessment</td>
+            <td class="data-2"><a href="/my-classes/{{id}}/update/final">Update Marks</a></td>
+            <td class="data-2"><a href="/my-classes/{{id}}/view/final">View Marks</a></td>
+        </tr>
+    </table>
+</body>
+
+<style>
+    table{
+        margin-top: 20vh;
+        margin-left: 10vw;
+    }
+
+    .data-1{
+        width: 40vw;
+    }
+
+    .data-2{
+        width: 20vw;
+        background-color: #e23e75;
+    }
+
+    td{
+        text-align: center;
+        padding-top: 2vh;
+        padding-bottom: 2vh;
+    }
+
+    td a{
+        padding-left: 1vw;
+        padding-right: 1vw;
+    }
+
+    body{
+        background-color: #33333d;
+    }
+
+    tr{
+        background-color: #373740;
+        color: white;
+    }
+
+    tr a, tr a:hover, .material-icons{
+        color: white;
+    }
+
+    #home-button, #home-button:hover{
+        text-decoration: none;
+        margin-left: 2vw;
+    }
+</style>
+</html>
